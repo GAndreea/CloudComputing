@@ -1,0 +1,13 @@
+body {
+	width:100%;
+}
+
+#movies {
+	display:inline-block;
+	width:40%;
+}
+
+#YoutubeVideo {
+	display:inline-block;
+	width: 40%;
+}
