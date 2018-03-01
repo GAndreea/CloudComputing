@@ -2,42 +2,41 @@
 var express = require('express')
 var app = express()
 var path = require("path");
+var LocalStorage = require('node-localstorage').LocalStorage,
+
 const bodyParser = require('body-parser')
 app.use(express.static(path.join(__dirname, 'public')));
 
-/**
-* This call sends an email to one recipient, using a validated sender address
-* Do not forget to update the sender address used in the sample
-*/
+
 app.use(bodyParser.urlencoded({ extended: false }))
 
-app.post('/sms', function (req, res) {
-  const body = req.body.Body
-  console.log(req.body)
-  res.set('Content-Type', 'text/plain')
-  res.send("a")
-})
-
-const mailjet = require ('node-mailjet')
-  .connect('APIKEY' , 'SECRET')
-const request = mailjet
+app.post('/', function (req, res) {
+  console.log(typeof(req.body.movies))
+  var myStr= " "
+  var mymovies=req.body.movies
+  for (var i=0; i<mymovies.length; i++) {
+  	myStr=myStr+mymovies[i] + ", "
+  }
+  const mailjet = require ('node-mailjet')
+  .connect('key' , 'secret')
+  const request = mailjet
   .post("send", {'version': 'v3.1'})
   .request({
     "Messages":[
         {
             "From": {
                 "Email": "angiurgila@gmail.com",
-                "Name": "Super"
+                "Name": "Movies"
             },
             "To": [
                 {
-                    "Email": "angiurgila@gmail.com",
-                    "Name": "Passenger"
+                    "Email": req.body.email,
+                    "Name": "You"
                 }
             ],
-            "Subject": "Your email flight plan!",
-            "TextPart": "Dear passenger, welcome to Mailjet! May the delivery force be with you!",
-            "HTMLPart": "<h3>Dear passenger, welcome to Mailjet!</h3><br />May the delivery force be with you!",
+            "Subject": "Movies to watch",
+            "TextPart": myStr,
+            "HTMLPart": "<h3>Here are some movies you've found interesting!</h3><p>" + myStr +"</p><br />Thank you!"
         }
     ]
   })
@@ -48,16 +47,24 @@ request
   .catch((err) => {
     console.log(err.statusCode)
   })
+  const body = req.body.Body
+  console.log("---REQ & ANSW --")
+  console.log(req)
+  //console.log(res)
+  res.set('Content-Type', 'text/plain')
+  res.send("Mail Succesfully send!")
+})
 
-myVar= "ana"
+
+app.use(express.static(path.join(__dirname, "static")));
 
 app.get('/', function(req, res) {
     res.sendFile(path.join(__dirname+'/index.html'));
 });
-app.get('/main.html', function(req, res) {
-    res.render(path.join(__dirname+'/main.html'), {name:myVar});
 
-   // res.sendFile(path.join(__dirname+'/main.html'));
+app.get('/details', function(req, res) {
+    res.sendFile(path.join(__dirname+'/index2.html'));
 });
+   // res.sendFile(path.join(__dirname+'/main.html'));
 app.listen(8000);
 console.log("Running at Port 8000");

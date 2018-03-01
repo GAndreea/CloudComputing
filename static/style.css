@@ -1,0 +1,49 @@
+body {
+	width:100%;
+}
+
+#movies {
+	display:none;
+	width:40%;
+	background-color:#333333;
+	color:white;
+}
+
+#trailer {
+	display:none;
+	width: 58%;
+	vertical-align:top;
+}
+
+#movie {
+	margin-left:10px;
+}
+
+header {
+	background-color:black;
+	height:68px;
+	width:100%;
+	padding:12px 20px 0 20px;
+}
+li {
+	border-bottom: 1px solid white;
+	padding:5px;
+	height:50px;
+}
+.searchTrailer, .addMovie {
+	float:right;
+	display:inline-block;
+}
+.addMovie {
+	margin:0 10px 0 0;
+	background-color:#ddedb8;
+}
+.searchTrailer {
+	background-color:#ff8484;
+}
+body{margin:0;background-color:whitesmoke;}
+ul { list-style-type: none; overflow-y:scroll; height: 500px; }
+.yourMovies {padding:35px;}
+.btn {height:35px;}
+input[type="text"] {  background-color : black; border:1px solid white; color:white; height:33px;}
+
