@@ -5,7 +5,7 @@ http.createServer(function(req, res) {
     const { method, url } = req;
     const MongoClient = require('mongodb').MongoClient;
 
-    const MONGO_URL = 'mongodb://user:****@ds*******.mlab.com:***/mydb';
+    const MONGO_URL = 'mongodb://user:***@d******.mlab.com:*****/mydb';
 
 
 
@@ -99,8 +99,8 @@ http.createServer(function(req, res) {
                         const res_data = JSON.parse(body);
                         MongoClient.connect(MONGO_URL, function(err, db) {
                             if (err) {
-                            	res.write("err");
-                            	res.end();
+                                res.write("err");
+                                res.end();
                             }
                             var myquery = { title: res_data.title };
                             db.collection("books").deleteOne(myquery, function(err, obj) {
@@ -120,12 +120,111 @@ http.createServer(function(req, res) {
                     });
 
                 } else {
-                    res.write("404 not found");
-                    res.end();
+                    if (req.method === 'POST' && req.url == '/newCollection') {
+                        let body = [];
+                        req.on('data', (chunk) => {
+                            body.push(chunk);
+                        }).on('end', () => {
+                            body = Buffer.concat(body).toString();
+                            const res_data = JSON.parse(body);
+                            MongoClient.connect(MONGO_URL, function(err, db) {
+                                if (err) {
+                                    res.setHead(404, ('Content-Type', 'application/json'));
+                                    res.write("Error")
+                                    res.end();
+                                }
+                                db.createCollection(res_data.name, function(err, res) {
+                                    if (err) throw err;
+                                    console.log("Collection created!");
+
+                                    db.close();
+                                });
+                            });
+                            res.write("Collection created")
+                            res.end();
+                        }).on('error', () => {
+                            res.setHead(404, ('Content-Type', 'application/json'));
+                            res.write("Error")
+                            res.end();
+                        });
+                    } else {
+                        if (req.method === 'GET' && req.url === '/collection') {
+                            MongoClient.connect(MONGO_URL, (err, db) => {
+                                if (err) {
+                                    res.write("err");
+                                    res.end();
+                                }
+                                const { headers } = req;
+                                const colectie = headers['colectie'];
+                                var collections = db.collection(colectie);
+                                var result = collections.find({}).toArray(function(err, result) {
+                                    //if (err) throw err;
+                                    res.write(JSON.stringify(result));
+                                    res.end();
+                                    console.log(JSON.stringify(result));
+                                    db.close();
+                                });
+
+                                // Do something with db here, like inserting a record
+                            });
+                        } else {
+                            if (req.method === 'GET' && req.url === '/getItem') {
+                                MongoClient.connect(MONGO_URL, (err, db) => {
+                                    if (err) {
+                                        res.write("err");
+                                        res.end();
+                                    }
+
+                                    const { headers } = req;
+                                    const colectie = headers['colectie'];
+                                    const titlu = headers['title']
+                                    console.log(titlu);
+                                    var myquery = { title: titlu };
+                                    var collections = db.collection(colectie);
+                                    db.collection(colectie).findOne(myquery, function(err, result) {
+                                        if (err) throw err;
+                                        res.write(JSON.stringify(result));
+                                        res.end();
+                                        db.close();
+                                    });
+                                });
+                            } else {
+                                if (req.method === 'DELETE' && req.url === '/deleteCol') {
+                                    let body = [];
+                                    req.on('data', (chunk) => {
+                                        body.push(chunk);
+                                    }).on('end', () => {
+                                        body = Buffer.concat(body).toString();
+                                        const res_data = JSON.parse(body);
+                                        MongoClient.connect(MONGO_URL, function(err, db) {
+                                            if (err) {
+                                                res.write("err");
+                                                res.end();
+                                            }
+                                            db.collection(res_data.collection).drop();
+                                        });
+                                        res.write("Deleted")
+                                        res.end();
+                                    }).on('error', () => {
+                                        res.write("Error")
+                                        res.end();
+                                    });
+                                } else {
+                                    res.write("Error")
+                                    res.end();
+                                }
+                            }
+                        }
+                    }
+
                 }
             }
         }
     }
+
+    //res.write("404 not found");
+    //res.end();
+
 
     //console.log(url);
     //res.write(url); //write a response to the client
