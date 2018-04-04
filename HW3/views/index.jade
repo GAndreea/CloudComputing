@@ -9,53 +9,46 @@ html(lang="en")
     link(rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css")
     script(src="https://stackpath.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js")
 if user
-  body
+  body(class="bgr-img-logged")
     header
       nav
         if user
-          a(href="/mine") My Library
+          img(src=user.imageUrl)
+          span Logged in as 
+          span(class="bold") #{user.name}
           a(href="/logout" class="login btn btn-default") Sign out
         else 
           a(href="/login" class="login btn btn-default") Sign in
-      section#account
-        if user
-          img(src=user.imageUrl)
-          span Logged in as #{user.name}
-        else
           div(class="home-message-div")
             h1(class="home-message") Photo storage
-            h1(class="home-message") Store your photos on cloud with unlimited storage
-    if user
-      section#photos
-        if photos.length
-          - each book in photos
-            .book
-              if book.imageUrl
-                .cover
-                  img(src=book.imageUrl title="#{book.title} by #{book.author}")
-              else
-                .info
-                  .title= book.title
-                  .by - by -
-                  .author= book.author
-              a.delete(href="/photos/delete?id=#{book.id}") delete
-        else
-          .nophotos There are no photos!
+            h4(class="home-message") Store your photos on cloud with unlimited storage
+    .content
+      if user
+        section#photos
+          if photos.length
+            - each book in photos
+              .book
+                if book.imageUrl
+                  .cover
+                    img(src=book.imageUrl title="#{book.title} by #{book.author}")              
+          else
+            .nophotos There are no photos!
 
-    if user
-      fieldset#add-book
-        legend Add new photo
-        form(method="post" action="/photos" enctype="multipart/form-data")
-          label
-            | Title
-            input(name="title" type="text" class="form-control" placeholder="eg. A Tale of Two Cities")
-          label
-            | Author
-            input(name="author" type="text" class="form-control" placeholder="eg. Charles Dickens")
-          label
-            | Cover image (optional)
-            input(name="cover" class="form-control" type="file")
-          input(type="submit" value="Save photo")
+      if user
+        fieldset#add-book
+          legend Add new photo
+          hr
+          form(method="post" action="/photos" enctype="multipart/form-data")
+            label
+              | Title
+              input(name="title" type="text" class="form-control" placeholder="eg. Memory")
+            label
+              | Description
+              input(name="description" type="text" class="form-control" placeholder="eg. A very nice day at the beach")
+            label
+              | Image 
+              input(name="cover" class="form-control" type="file")
+            input(type="submit" value="Save photo")
 
 else
   body(class="bgr-img")
@@ -70,4 +63,4 @@ else
         else
           div(class="home-message-div")
             h1(class="home-message") Photo storage
-            h1(class="home-message") Store your photos on cloud with unlimited storage
+            h4(class="home-message") Store your photos on cloud with unlimited storage

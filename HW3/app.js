@@ -58,7 +58,7 @@ app.post('/photos', function(req, res) {
   if (req.session.user)
     userId = req.session.user.id;
 
-  photos.addPhoto(req.body.title, req.body.author, coverImageData, userId, function(err) {
+  photos.addPhoto(req.body.title, req.body.description, coverImageData, userId, function(err) {
     res.redirect(req.get('Referer') || '/');
   })
 });
