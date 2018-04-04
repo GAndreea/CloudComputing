@@ -18,14 +18,8 @@ app.enable('trust proxy');
 
 
 app.get('/', function(req, res) {
-  photos.getAllPhotos(function(err, photos) {
-    var keyphotos = photos.map((photo) => Object.assign(photo, { id: photo.id  }));
-    res.render('index', { photos: keyphotos, user: req.session.user });
-  });
-});
-
-app.get('/myLibary', function(req, res) {
-  if (! req.session.user) return res.redirect('/');
+  if (! req.session.user) res.render('index', { photos: [], user: req.session.user });
+  else
   photos.getUserPhotos(req.session.user.id, function(err, photos) {
     var keyphotos = photos.map((photo) => Object.assign(photo, { id: photo.id }));
     res.render('index', { photos: keyphotos, user: req.session.user });
